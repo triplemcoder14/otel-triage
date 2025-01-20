@@ -1,2 +1,2 @@
 # otel-triage
-An auto-instrumentational workaround of otel in js 
+this app is designed to demonstrate  otel instrumentation in an express.js application, combined with RabbitMQ messaging for background task processing.
