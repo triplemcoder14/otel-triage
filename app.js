@@ -4,7 +4,7 @@ const PORT = process.env.PORT || "8080";
 const app = express();
 
 const opentelemetry = require("@opentelemetry/api");
-const queue = require("./queue");
+const tail = require("./queue"); 
 const { W3CTraceContextPropagator } = require("@opentelemetry/core");
 
 const tracer = opentelemetry.trace.getTracer(
@@ -12,9 +12,9 @@ const tracer = opentelemetry.trace.getTracer(
 );
 
 app.get("/", (req, res) => {
-
     const parentSpan = tracer.startSpan('send_to_queue', { attributes: { foo: 'bar' } });
-    // do work
+
+    // simulating work
     for (let i = 0; i < 10; i += 1) {
         console.log(i);
     }
@@ -28,12 +28,13 @@ app.get("/", (req, res) => {
         opentelemetry.defaultTextMapSetter
     );
 
-    queue.send({foo: 'bar', carrier });
+    // use `tail` to send the message to the queue
+    tail.send({ foo: 'bar', carrier });
 
     parentSpan.end();
     res.send("Hello World");
 });
 
 app.listen(parseInt(PORT, 10), () => {
-  console.log(`Listening for requests on http://localhost:${PORT}`);
+    console.log(`Listening for requests on http://localhost:${PORT}`);
 });
