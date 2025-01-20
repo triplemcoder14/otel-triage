@@ -1,2 +1,2 @@
 # otel-triage
-auto implementation of otel in js 
+An auto-instrumentational workaround of otel in js 
