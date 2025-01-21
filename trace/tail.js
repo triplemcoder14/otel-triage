@@ -3,7 +3,7 @@ const amqp = require('amqplib');
 class Tail {
 
     queue = "task_queue";
-    
+
     async send(payload) {
         const self = this;
         const queue = self.queue;
@@ -18,7 +18,7 @@ class Tail {
         });
         console.log(" [x] Sent '%s'", payloadStr);
         // connection.close();
-    }   
+    }
 }
 
 module.exports = new Tail();
