@@ -32,8 +32,15 @@ app.get("/", (req, res) => {
     tail.send({ foo: 'bar', carrier });
 
     parentSpan.end();
-    res.send("Hello World");
+    res.send("Finops Dashboard is live");
 });
+
+
+{
+(
+app.get("/", (req, res) => {
+})
+)};
 
 app.listen(parseInt(PORT, 10), () => {
     console.log(`Listening for requests on http://localhost:${PORT}`);

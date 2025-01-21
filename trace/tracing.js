@@ -18,8 +18,15 @@ registerInstrumentations({
         getNodeAutoInstrumentations()
         // new HttpInstrumentation(),
         // new ExpressInstrumentation()
+        new ExpressInstrumentatiom()
     ],
 });
+
+
+//const resource = Resource.default().merge(
+//    new Resource({
+//    [SemanticResource()]}))
+
 
 const resource = Resource.default().merge(
     new Resource({
