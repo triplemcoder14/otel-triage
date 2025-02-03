@@ -1,3 +1,4 @@
+
 const opentelemetry = require("@opentelemetry/api");
 const { Resource } = require("@opentelemetry/resources");
 const { SemanticResourceAttributes } = require("@opentelemetry/semantic-conventions");
@@ -21,7 +22,6 @@ registerInstrumentations({
         new ExpressInstrumentatiom()
     ],
 });
-
 
 //const resource = Resource.default().merge(
 //    new Resource({
