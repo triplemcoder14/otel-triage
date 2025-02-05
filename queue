@@ -3,21 +3,24 @@ const amqp = require('amqplib');
 module.exports = {
     send: async (message) => {
         try {
+            // Ensure message is a string or Buffer
+            if (typeof message !== 'string') {
+                message = JSON.stringify(message); // Convert object to string if it's not already a string
+            }
+
             // connect to RabbitMQ server
             const connection = await amqp.connect('amqp://localhost'); // replace with your RabbitMQ server URL
             const channel = await connection.createChannel();
 
-
             const queue = 'new_queue';
             await channel.assertQueue(queue, { durable: true });
 
-
+            // Send message to the queue
             channel.sendToQueue(queue, Buffer.from(message), {
                 persistent: true, // ensures message is not lost
             });
 
             console.log("Message sent to queue:", message);
-
 
             setTimeout(() => {
                 channel.close();
@@ -28,11 +31,3 @@ module.exports = {
         }
     }
 };
-
-//// queue.js
-//module.exports = {
-//    send: (message) => {
-//        console.log("Sending message to queue:", message);
-//        // Add your queue logic here (e.g., sending to RabbitMQ, Kafka, etc.)
-//    }
-//};
