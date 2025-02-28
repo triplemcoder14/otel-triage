@@ -1,48 +1,40 @@
-
 const opentelemetry = require("@opentelemetry/api");
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node"); // ✅ Use Node.js provider
 const { Resource } = require("@opentelemetry/resources");
 const { SemanticResourceAttributes } = require("@opentelemetry/semantic-conventions");
-const { WebTracerProvider } = require("@opentelemetry/sdk-trace-web");
+const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
+const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-http");
 const { registerInstrumentations } = require("@opentelemetry/instrumentation");
 const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node");
-const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
-const { ExpressInstrumentation } = require("opentelemetry-instrumentation-express");
 
-const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
-const {
-    OTLPTraceExporter,
-} = require("@opentelemetry/exporter-trace-otlp-http");
-
-// optonaly register automatic instrumentation libraries
 registerInstrumentations({
-    instrumentations: [
-        getNodeAutoInstrumentations()
-        // new HttpInstrumentation(),
-        // new ExpressInstrumentation()
-        new ExpressInstrumentatiom()
-    ],
+    instrumentations: [getNodeAutoInstrumentations()]
 });
 
-//const resource = Resource.default().merge(
-//    new Resource({
-//    [SemanticResource()]}))
-
-
-const resource = Resource.default().merge(
-    new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: process.env.SERVICE_NAME,
+//  resource with service name
+const resource = new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: process.env.SERVICE_NAME || "otel-triage-service",
     [SemanticResourceAttributes.SERVICE_VERSION]: "0.1.0",
-    })
-);
-
-const provider = new WebTracerProvider({
-    resource: resource,
 });
+
+const provider = new NodeTracerProvider({ resource }); // ✅ Fix: Use NodeTracerProvider
 const exporter = new OTLPTraceExporter({
     url: "http://localhost:4318/v1/traces",
     headers: {},
 });
-const processor = new BatchSpanProcessor(exporter);
-provider.addSpanProcessor(processor);
+provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 
+// register provider globally
 provider.register();
+
+//const provider = new WebTracerProvider({
+//    resource: resource,
+//});
+//const exporter = new OTLPTraceExporter({
+//    url: "http://localhost:4318/v1/traces",
+//    headers: {},
+//});
+//const processor = new BatchSpanProcessor(exporter);
+//provider.addSpanProcessor(processor);
+//
+//provider.register();

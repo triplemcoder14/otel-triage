@@ -20,11 +20,11 @@ class Tail {
                 durable: true
             });
 
-            const payloadStr = JSON.stringify(payload); // Ensure it's stringified
+            const payloadStr = JSON.stringify(payload); // make it's stringified
 
 
             await channel.sendToQueue(queue, Buffer.from(payloadStr), {
-                persistent: true  // Ensures the message is durable
+                persistent: true  // message should be durable
             });
 
             console.log(" [x] Sent '%s'", payloadStr);

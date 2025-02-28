@@ -37,7 +37,7 @@ async function run() {
                     } catch (error) {
                         console.error('Error during external request or processing:', error);
                     } finally {
-                        span.end(); // ensure the span is ended in any case
+                        span.end(); // span is ends in any case
                     }
                 });
             });
@@ -67,7 +67,7 @@ run();
 process.on('SIGINT', async () => {
     console.log('Shutting down gracefully...');
     try {
-        // Gracefully close the RabbitMQ connection
+
         await conn.close();
         console.log('RabbitMQ connection closed.');
         process.exit(0);
