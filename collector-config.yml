@@ -1,0 +1,28 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  logging:
+  jaeger:
+    endpoint: "http://jaeger:14250"
+    tls:
+      insecure: true
+  file:
+    path: "/var/otel-triage/app.log"
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, jaeger]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, file]

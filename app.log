@@ -1,0 +1,4 @@
+{"level":"info","message":"Listening for requests on http://localhost:8989"}
+{"level":"info","message":"Incoming request","method":"GET","url":"/"}
+{"carrier":{},"level":"info","message":"✅ Carrier after injection"}
+{"level":"info","message":"Finops Dashboard accessed"}
