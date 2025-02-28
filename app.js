@@ -1,48 +1,44 @@
 const express = require("express");
 const opentelemetry = require("@opentelemetry/api");
-const { W3CTraceContextPropagator } = require("@opentelemetry/core");
 const tail = require("./queue");
+const { W3CTraceContextPropagator, defaultTextMapSetter } = require("@opentelemetry/core");
 
-const PORT = process.env.PORT || "8080";
+const PORT = process.env.PORT || "8989";
 const app = express();
 
 const tracer = opentelemetry.trace.getTracer(
     process.env.SERVICE_NAME || "request-service"
 );
 
-app.get("/", async (req, res) => {
-    const parentSpan = tracer.startSpan('send_to_queue', { attributes: { foo: 'bar' } });
-
-
-    for (let i = 0; i < 10; i += 1) {
-        console.log(i);
-    }
-
+app.get("/", (req, res) => {
+    const parentSpan = tracer.startSpan("send_to_queue", {
+        attributes: { user_email: "mukhy16@gamil.com", action: "dashboard_access" },
+    });
 
     const propagator = new W3CTraceContextPropagator();
     let carrier = {};
 
+    opentelemetry.context.with(
+        opentelemetry.trace.setSpan(opentelemetry.context.active(), parentSpan),
+        () => {
+            propagator.inject(
+                opentelemetry.context.active(),
+                carrier,
+                defaultTextMapSetter
+            );
 
-    propagator.inject(
-        opentelemetry.trace.setSpanContext(opentelemetry.ROOT_CONTEXT, parentSpan.spanContext()),
-        carrier,
-        opentelemetry.defaultTextMapSetter
+            console.log("Carrier after code injection:", carrier);
+
+            // ah, trace context
+            tail.send({ user_email: "mukhy16@gamil.com", action: "dashboard_access", carrier });
+
+            parentSpan.end();
+        }
     );
 
-    try {
-
-        await tail.send({ foo: 'bar', carrier });
-
-
-        parentSpan.end();
-        res.send("Otel-Triage Dashboard Is Live ");
-    } catch (error) {
-        console.error('Error sending message to queue:', error);
-        parentSpan.end(); // Ensure the span ends even in case of error
-        res.status(500).send("Error occurred while processing the request.");
-    }
+    res.send("Otel-Triage Service is Running");
 });
 
-app.listen(parseInt(PORT, 10), () => {
+app.listen(parseInt(PORT, 10), "0.0.0.0", () => {
     console.log(`Listening for requests on http://localhost:${PORT}`);
 });
