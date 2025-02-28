@@ -7,57 +7,27 @@ services:
       - COLLECTOR_ZIPKIN_HOST_PORT=9411
       - COLLECTOR_OTLP_ENABLED=true
     ports:
-      - 6831:6831
-      - 6832:6832
-      - 5778:5778
-      - 16686:16686
-      - 4317:4317
-      - 4318:4318
-      - 14250:14250
-      - 14268:14268
-      - 14269:14269
-      - 9411:9411
+      - "6831:6831"
+      - "6832:6832"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+      # Removed 4317 and 4318 to prevent conflicts
 
   rabbitmq:
     image: rabbitmq:latest
     ports:
-      - 5672:5672
+      - "5672:5672"
 
   otel-collector:
     image: otel/opentelemetry-collector:latest
-    container_name: otel-collector
-    command: [ "--config=/etc/otel-collector-config.yml" ]
     volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+      - "/root/otel/otel-triage/otel-collector-config.yml:/etc/otel-collector-config.yml"
+    command: ["--config=/etc/otel-collector-config.yml"]
     ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
-      - "8888:8888"   # Metrics UI]
-      - "8889:8889"   # Debug port
-    depends_on:
-      - jaeger
+      - "5000:4317"  # Changed from 4317 to 5000
+      - "5001:4318"  # Changed from 4318 to 5001
 
-
-#version: '3.7'
-#
-#services:
-#  jaeger:
-#    image: jaegertracing/all-in-one:latest
-#    environment:
-#      - COLLECTOR_ZIPKIN_HOST_PORT=9411
-#      - COLLECTOR_OTLP_ENABLED=true
-#    ports:
-#      - 6831:6831
-#      - 6832:6832
-#      - 5778:5778
-#      - 16686:16686
-#      - 4317:4317
-#      - 4318:4318
-#      - 14250:14250
-#      - 14268:14268
-#      - 14269:14269
-#      - 9411:9411
-#  rabbitmq:
-#    image: rabbitmq:latest
-#    ports:
-#      - 5672:5672

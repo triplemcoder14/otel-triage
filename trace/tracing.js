@@ -1,40 +1,25 @@
-const opentelemetry = require("@opentelemetry/api");
-const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node"); // ✅ Use Node.js provider
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
 const { Resource } = require("@opentelemetry/resources");
 const { SemanticResourceAttributes } = require("@opentelemetry/semantic-conventions");
-const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
-const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-http");
-const { registerInstrumentations } = require("@opentelemetry/instrumentation");
-const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node");
+const { ConsoleSpanExporter, SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
+const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 
-registerInstrumentations({
-    instrumentations: [getNodeAutoInstrumentations()]
+// Define the service name properly
+const provider = new NodeTracerProvider({
+    resource: new Resource({
+        [SemanticResourceAttributes.SERVICE_NAME]: "otel-triage-service",
+    }),
 });
 
-//  resource with service name
-const resource = new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: process.env.SERVICE_NAME || "otel-triage-service",
-    [SemanticResourceAttributes.SERVICE_VERSION]: "0.1.0",
+// Set up a Jaeger Exporter
+const exporter = new JaegerExporter({
+    endpoint: "http://localhost:14268/api/traces", // Change if your Jaeger setup differs
 });
 
-const provider = new NodeTracerProvider({ resource }); // fix: use nodeTracerpprovider
-const exporter = new OTLPTraceExporter({
-    url: "http://localhost:4318/v1/traces",
-    headers: {},
-});
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-
-// register provider globally
+// Configure tracing pipeline
+provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter())); // Optional: Logs spans in console
 provider.register();
 
-//const provider = new WebTracerProvider({
-//    resource: resource,
-//});
-//const exporter = new OTLPTraceExporter({
-//    url: "http://localhost:4318/v1/traces",
-//    headers: {},
-//});
-//const processor = new BatchSpanProcessor(exporter);
-//provider.addSpanProcessor(processor);
-//
-//provider.register();
+console.log("✅ OpenTelemetry tracing initialized");
+
