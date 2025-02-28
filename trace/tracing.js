@@ -17,7 +17,7 @@ const resource = new Resource({
     [SemanticResourceAttributes.SERVICE_VERSION]: "0.1.0",
 });
 
-const provider = new NodeTracerProvider({ resource }); // ✅ Fix: Use NodeTracerProvider
+const provider = new NodeTracerProvider({ resource }); // fix: use nodeTracerpprovider
 const exporter = new OTLPTraceExporter({
     url: "http://localhost:4318/v1/traces",
     headers: {},
