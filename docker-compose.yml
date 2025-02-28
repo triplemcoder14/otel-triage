@@ -15,7 +15,6 @@ services:
       - "14268:14268"
       - "14269:14269"
       - "9411:9411"
-      # Removed 4317 and 4318 to prevent conflicts
 
   rabbitmq:
     image: rabbitmq:latest
@@ -28,6 +27,6 @@ services:
       - "/root/otel/otel-triage/otel-collector-config.yml:/etc/otel-collector-config.yml"
     command: ["--config=/etc/otel-collector-config.yml"]
     ports:
-      - "5000:4317"  # Changed from 4317 to 5000
-      - "5001:4318"  # Changed from 4318 to 5001
+      - "5000:4317"
+      - "5001:4318"
 

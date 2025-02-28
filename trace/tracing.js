@@ -11,15 +11,15 @@ const provider = new NodeTracerProvider({
     }),
 });
 
-// Set up a Jaeger Exporter
+//jaeger xporter
 const exporter = new JaegerExporter({
-    endpoint: "http://localhost:14268/api/traces", // Change if your Jaeger setup differs
+    endpoint: "http://localhost:14268/api/traces", 
 });
 
-// Configure tracing pipeline
+// tracing pipeline
 provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
-provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter())); // Optional: Logs spans in console
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter())); 
 provider.register();
 
-console.log("✅ OpenTelemetry tracing initialized");
+console.log("✅ Otel-triage tracing initialized");
 
