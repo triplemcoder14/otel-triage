@@ -9,7 +9,7 @@ const PORT = 8989;
 const tracer = opentelemetry.trace.getTracer("otel-triage-service");
 
 app.use((req, res, next) => {
-    logger.info(`➡️ Incoming request: ${req.method} ${req.url}`);
+    logger.info(`incoming request: ${req.method} ${req.url}`);
     next();
 });
 
@@ -25,18 +25,18 @@ app.get("/", (req, res) => {
         () => {
             propagation.inject(opentelemetry.context.active(), carrier);
 
-            logger.info("✅ Trace context injected", { carrier });
+            logger.info(" Trace context injected", { carrier });
 
             setTimeout(() => {
-                logger.info("✅ Request processed successfully");
+                logger.info(" Request processed successfully");
                 parentSpan.end();
-                res.send("Otel-Triage Service is Running with Tracing");
+                res.send("otel-triage service is running with tracing");
             }, 1000);
         }
     );
 });
 
 app.listen(PORT, () => {
-    logger.info(`🚀 Server is running at http://localhost:${PORT}`);
+    logger.info(` server is running at http://localhost:${PORT}`);
 });
 
