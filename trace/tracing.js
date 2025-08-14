@@ -4,7 +4,7 @@ const { SemanticResourceAttributes } = require("@opentelemetry/semantic-conventi
 const { ConsoleSpanExporter, SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 
-// Define the service name properly
+// define the service name properly
 const provider = new NodeTracerProvider({
     resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: "otel-triage-service",
@@ -21,5 +21,6 @@ provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter())); 
 provider.register();
 
-console.log("✅ Otel-triage tracing initialized");
+console.log(" otel-triage tracing initialized");
+
 
